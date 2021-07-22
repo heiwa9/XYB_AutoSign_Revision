@@ -1,0 +1,18 @@
+{
+  "user": [
+    {
+      "token": {
+        "username": "账号1",
+        "password": "密码1"
+      },
+      "location": {
+        "country": "中国",
+        "province": "湖北省",
+        "city": "武汉市",
+        "adcode": "420111",
+        "address": "位置1"
+      },
+      "reason": ""
+    }
+  ]
+}
