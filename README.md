@@ -74,7 +74,7 @@ user.json
 ![3.jpg](https://ae01.alicdn.com/kf/Uf8da1b423b004fb29a9de531ad0096a0M.jpg)  
 ![4.jpg](https://ae01.alicdn.com/kf/Ufd4ecc4576be4542814cbbd492a10796v.jpg)  
 4. 配置`触发器`，选择自定义创建，配置`corn`  
-> 图中表示每日9AM触发签到函数，详细配置策略请参考[corn相关文档](https://cloud.tencent.com/document/product/583/9708#cron-.E8.A1.A8.E8.BE.BE.E5.BC.8F)  
+> 图中表示每日9AM触发签到函数(`0 40 8 * * MON-SAT *`为周一到周六上午8：40)，详细配置策略请参考[corn相关文档](https://cloud.tencent.com/document/product/583/9708#cron-.E8.A1.A8.E8.BE.BE.E5.BC.8F)  
 
 ![5.jpg](https://ae01.alicdn.com/kf/U35a7a71247e04fdf8da58c794f854a40N.jpg)  
 5. 点击完成，等待函数创建完成，选择刚刚创建的函数，点击测试，查看测试结果，若测试成功，则表示云函数部署完成  
