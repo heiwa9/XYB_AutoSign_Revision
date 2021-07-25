@@ -232,6 +232,20 @@ def getSignStatus(sessionId, trainId):
         return False
 
 
+# Qmsg酱通知
+def sendQmsgChan(msg):
+    log('正在发送Qmsg酱……')
+    config = readJsonInfo()
+    res = requests.post(url='https://qmsg.zendee.cn:443/group/{0}'.format(config['qmsg_key']),
+                            data={'msg': '校友邦签到通知\n时间：' + getTimeStr() + "\n消息：" + str(msg)})
+    code = res.json()['success']
+    if code:
+        log('发送Qmsg酱通知成功……')
+    else:
+        log('发送Qmsg酱通知失败……')
+        log('Qmsg酱返回结果'+code)
+
+
 def signHandler(userInfo):
     sessions = login(userInfo)
     sessionId = sessions['sessionId']
@@ -268,13 +282,15 @@ def signHandler(userInfo):
     else:
         autoSign(sessionId, signFormData)
     if (getSignStatus(sessionId, trainId)):
+        sendQmsgChan(userName+'签到成功')
         log('校友邦实习任务签到成功\n\n')
     else:
+        sendQmsgChan(userName+'签到失败')
         log('校友邦实习任务签到失败!')
 
 
 # 读取user.json
-def getUsersInfo():
+def readJsonInfo():
     with open('user.json', 'r', encoding='utf8') as fp:
         users = json.load(fp)
     fp.close()
@@ -283,12 +299,12 @@ def getUsersInfo():
 
 # 腾讯云函数使用
 def main_handler(event, context):
-    usersInfo = getUsersInfo()
-    for user in usersInfo['user']:
+    users = readJsonInfo()
+    for user in users['user']:
         signHandler(user)
 
 
 if __name__ == '__main__':
-    usersInfo = getUsersInfo()
-    for user in usersInfo['user']:
+    users = readJsonInfo()
+    for user in users['user']:
         signHandler(user)
