@@ -1,4 +1,5 @@
 {
+  "qmsg_key":"",//qmsg QQ消息推送
   "user": [
     {
       "token": {
