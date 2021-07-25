@@ -4,8 +4,7 @@
 项目来自[Python 项目](https://github.com/CncCbz/xybSign/)  
 # 修订内容
 1.更改登录方式（账号密码登录）  
-2.取消Sever酱通知  
-3.多账号支持
+2.多账号支持
 
 # 校友邦自动签到与签退
 
@@ -24,6 +23,7 @@ user.json
 
 ```javascript
 {
+  "qmsg_key":"",//qmsg QQ消息推送
   "user": [
     {
       "token": {
