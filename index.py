@@ -302,9 +302,11 @@ def main_handler(event, context):
     users = readJsonInfo()
     for user in users['user']:
         signHandler(user)
+        time.sleep(120)
 
 
 if __name__ == '__main__':
     users = readJsonInfo()
     for user in users['user']:
         signHandler(user)
+        time.sleep(120)
