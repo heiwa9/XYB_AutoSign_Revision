@@ -237,7 +237,9 @@ def sendQmsgChan(msg):
     time.sleep(1.5)
     log('正在发送Qmsg酱……')
     config = readJsonInfo()
-    # params = {'QQ':'1309711225'}
+    if config['qmsg_key'] =="":
+        log('不发送通知……')
+        return
     res = requests.post(url='https://qmsg.zendee.cn:443/group/{0}'.format(config['qmsg_key']),
                             data={'msg': '校友邦签到通知\n时间：' + getTimeStr() + "\n消息：" + str(msg),'qq':'879618038'})
     code = res.json()['success']
