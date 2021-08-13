@@ -234,6 +234,7 @@ def getSignStatus(sessionId, trainId):
 
 # Qmsg酱通知
 def sendQmsgChan(msg):
+    time.sleep(1.5)
     log('正在发送Qmsg酱……')
     config = readJsonInfo()
     # params = {'QQ':'1309711225'}
@@ -303,11 +304,11 @@ def main_handler(event, context):
     users = readJsonInfo()
     for user in users['user']:
         signHandler(user)
-        time.sleep(1)
+        time.sleep(1.5)
 
 
 if __name__ == '__main__':
     users = readJsonInfo()
     for user in users['user']:
         signHandler(user)
-        time.sleep(1)
+        time.sleep(1.5)
