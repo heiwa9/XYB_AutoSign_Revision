@@ -236,14 +236,15 @@ def getSignStatus(sessionId, trainId):
 def sendQmsgChan(msg):
     log('正在发送Qmsg酱……')
     config = readJsonInfo()
+    # params = {'QQ':'1309711225'}
     res = requests.post(url='https://qmsg.zendee.cn:443/group/{0}'.format(config['qmsg_key']),
-                            data={'msg': '校友邦签到通知\n时间：' + getTimeStr() + "\n消息：" + str(msg)})
+                            data={'msg': '校友邦签到通知\n时间：' + getTimeStr() + "\n消息：" + str(msg),'qq':'879618038'})
     code = res.json()['success']
     if code:
         log('发送Qmsg酱通知成功……')
     else:
         log('发送Qmsg酱通知失败……')
-        log('Qmsg酱返回结果'+code)
+        log('Qmsg酱返回结果'+str(code))
 
 
 def signHandler(userInfo):
@@ -302,11 +303,11 @@ def main_handler(event, context):
     users = readJsonInfo()
     for user in users['user']:
         signHandler(user)
-        time.sleep(120)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
     users = readJsonInfo()
     for user in users['user']:
         signHandler(user)
-        time.sleep(120)
+        time.sleep(1)
