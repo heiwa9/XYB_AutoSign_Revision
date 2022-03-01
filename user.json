@@ -1,17 +1,17 @@
 {
-  "qmsg_key":"",
+  "send_key":"Server酱 不发送通知留空",
   "user": [
     {
       "token": {
-        "username": "账号1",
-        "password": "密码1"
+        "username": "用户1手机号码",
+        "password": "用户1登录密码"
       },
       "location": {
         "country": "中国",
-        "province": "湖北省",
-        "city": "武汉市",
-        "adcode": "420111",
-        "address": "位置1"
+        "province": "xx省",
+        "city": "xx市",
+        "adcode": "邮政编码",
+        "address": "签到位置的详细地址"
       },
       "reason": ""
     }

@@ -19,7 +19,6 @@ urls = {
     'status': 'https://xcx.xybsyw.com/student/clock/GetPlan!detail.action'
 }
 
-
 host1 = 'xcx.xybsyw.com'
 host2 = 'app.xybsyw.com'
 
@@ -67,7 +66,7 @@ def login(userInfo):
     headers = getHeader(host1)
     url = urls['login']
     resp = requests.post(url=url, headers=headers, data=data).json()
-    if('成功' in resp['msg']):
+    if ('成功' in resp['msg']):
         ret = {
             'sessionId': resp['data']['sessionId'],
             'loginerId': resp['data']['loginerId']
@@ -86,7 +85,7 @@ def getUsername(sessionId):
     headers['cookie'] = f'JSESSIONID={sessionId}'
     url = urls['loadAccount']
     resp = requests.post(url=url, headers=headers).json()
-    if('成功' in resp['msg']):
+    if ('成功' in resp['msg']):
         ret = resp['data']['loginer']
         log(f"姓名:{ret}")
         return ret
@@ -101,7 +100,7 @@ def getIP(sessionId):
     headers['cookie'] = f'JSESSIONID={sessionId}'
     url = urls['ip']
     resp = requests.post(url=url, headers=headers).json()
-    if('success' in resp['msg']):
+    if ('success' in resp['msg']):
         ret = resp['data']['ip']
         log(f'ip:{ret}')
         return ret
@@ -116,7 +115,7 @@ def getTrainID(sessionId):
     headers['cookie'] = f'JSESSIONID={sessionId}'
     url = urls['trainId']
     resp = requests.post(url=url, headers=headers).json()
-    if('成功' in resp['msg']):
+    if ('成功' in resp['msg']):
         ret = resp['data']['clockVo']['traineeId']
         log(f'traineeId:{ret}')
         return ret
@@ -134,7 +133,7 @@ def getPosition(sessionId, trainId):
         'traineeId': trainId
     }
     resp = requests.post(url=url, headers=headers, data=data).json()
-    if('成功' in resp['msg']):
+    if ('成功' in resp['msg']):
         address = resp['data']['postInfo']['address']
         lat = resp['data']['postInfo']['lat']
         lng = resp['data']['postInfo']['lng']
@@ -226,28 +225,25 @@ def getSignStatus(sessionId, trainId):
     }
     resp = requests.post(url=url, headers=headers, data=data).json()
     # if(resp['data']['clockInfo']['status'] == 0):
-    if(len(resp['data']['clockInfo']['inTime']) > 0):
+    if len(resp['data']['clockInfo']['inTime']) > 0:
         return True
     else:
         return False
 
 
-# Qmsg酱通知
-def sendQmsgChan(msg):
-    time.sleep(1.5)
-    log('正在发送Qmsg酱……')
+# Server酱通知
+def sendNoice(msg):
+    time.sleep(1)
+    log('正在发送通知')
     config = readJsonInfo()
-    if config['qmsg_key'] =="":
+    if config['send_key'] == "":
         log('不发送通知……')
-        return
-    res = requests.post(url='https://qmsg.zendee.cn/send/{0}'.format(config['qmsg_key']),
-                            data={'msg': '校友邦签到通知\n时间：' + getTimeStr() + "\n消息：" + str(msg)})
-    code = res.json()['success']
-    if code:
-        log('发送Qmsg酱通知成功……')
+    resp = requests.post(url='https://sctapi.ftqq.com/{0}.send'.format(config['send_key']),
+                         data={'title': '校友邦签到通知', 'desp': '时间：' + getTimeStr() + "\n消息：" + str(msg)})
+    if resp.json()['data']['error'] == 'SUCCESS':
+        log('推送成功')
     else:
-        log('发送Qmsg酱通知失败……')
-        log('Qmsg酱返回结果'+str(code))
+        log('推送失败' + resp.json())
 
 
 def signHandler(userInfo):
@@ -280,16 +276,16 @@ def signHandler(userInfo):
         'imgUrl': '',
         'reason': userInfo['reason']
     }
-    if(getSignStatus(sessionId, trainId)):
+    if getSignStatus(sessionId, trainId):
         log('已签到,执行重新签到')
         newSign(sessionId, signFormData)
     else:
         autoSign(sessionId, signFormData)
-    if (getSignStatus(sessionId, trainId)):
-        sendQmsgChan(userName+'签到成功')
+    if getSignStatus(sessionId, trainId):
+        sendNoice(userName + '签到成功')
         log('校友邦实习任务签到成功\n\n')
     else:
-        sendQmsgChan(userName+'签到失败')
+        sendNoice(userName + '签到失败')
         log('校友邦实习任务签到失败!')
 
 
