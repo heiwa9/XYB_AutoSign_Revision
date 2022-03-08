@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
+import hmac
+from urllib import parse
 import requests
 import sys
 import json
@@ -216,37 +219,62 @@ def newSign(sessionId, data):
 
 
 # 获取签到状态
-def getSignStatus(sessionId, trainId):
+def getSignStatus(sessionId, trainId, sence):
     headers = getHeader(host1)
     headers['cookie'] = f'JSESSIONID={sessionId}'
     url = urls['status']
-    data = {
-        'traineeId': trainId
-    }
+    data = {'traineeId': trainId}
+
     resp = requests.post(url=url, headers=headers, data=data).json()
-    # if(resp['data']['clockInfo']['status'] == 0):
-    if len(resp['data']['clockInfo']['inTime']) > 0:
-        return True
+    if sence == '1':
+        return True if len(resp['data']['clockInfo']['outTime']) > 0 else False
     else:
-        return False
+        return True if len(resp['data']['clockInfo']['inTime']) > 0 else False
 
 
 # Server酱通知
 def sendNoice(msg):
-    time.sleep(1)
     log('正在发送通知')
     config = readJsonInfo()
-    if config['send_key'] == "":
+    if config['server_send_key'] == "":
         log('不发送通知……')
-    resp = requests.post(url='https://sctapi.ftqq.com/{0}.send'.format(config['send_key']),
+        return
+    resp = requests.post(url='https://sctapi.ftqq.com/{0}.send'.format(config['server_send_key']),
                          data={'title': '校友邦签到通知', 'desp': '时间：' + getTimeStr() + "\n消息：" + str(msg)})
-    if resp.json()['data']['error'] == 'SUCCESS':
+    if resp.status_code == 200:
         log('推送成功')
     else:
-        log('推送失败' + resp.json())
+        log('推送失败')
 
 
-def signHandler(userInfo):
+def dingTalkNoice(msg):
+    log('正在发送通知')
+    config = readJsonInfo()
+    if config['ding_talk_secret'] == "":
+        log('不发送通知……')
+        return
+    timestamp = str(round(time.time() * 1000))
+    secret_enc = config['ding_talk_secret'].encode('utf-8')
+    string_to_sign = '{}\n{}'.format(timestamp, config['ding_talk_secret'])
+    string_to_sign_enc = string_to_sign.encode('utf-8')
+    hmac_code = hmac.new(secret_enc, string_to_sign_enc,
+                         digestmod=hashlib.sha256).digest()
+    sign = parse.quote_plus(base64.b64encode(hmac_code))
+    resp = requests.post(url='https://oapi.dingtalk.com/robot/send?access_token={0}&timestamp={1}&sign={2}'.
+                         format(config["ding_talk_access_token"],
+                                timestamp, sign,), headers={'content-type': 'application/json'}, data=json.dumps({
+                                    "msgtype": "text",
+                                    "text": {
+                                        "content": '校友帮签到通知\n时间:' + getTimeStr() + '\n消息:' + str(msg),
+                                    }
+                                }))
+    if resp.status_code == 200:
+        log('推送成功')
+    else:
+        log('推送失败')
+
+
+def signHandler(userInfo, sence):
     sessions = login(userInfo)
     sessionId = sessions['sessionId']
     loginerId = sessions['loginerId']
@@ -272,21 +300,30 @@ def signHandler(userInfo):
         'address': userInfo['location']['address'],
         'deviceName': 'microsoft',
         'punchInStatus': '1',
-        'clockStatus': '2',
+        'clockStatus': sence,
         'imgUrl': '',
         'reason': userInfo['reason']
     }
-    if getSignStatus(sessionId, trainId):
-        log('已签到,执行重新签到')
-        newSign(sessionId, signFormData)
-    else:
+    if sence == '1':
         autoSign(sessionId, signFormData)
-    if getSignStatus(sessionId, trainId):
-        sendNoice(userName + '签到成功')
-        log('校友邦实习任务签到成功\n\n')
+        if getSignStatus(sessionId, trainId, sence):
+            dingTalkNoice(userName + '签退成功')
+            log('校友邦实习任务签退成功\n\n')
+        else:
+            dingTalkNoice(userName + '签退失败')
+            log('校友邦实习任务签退失败!')
     else:
-        sendNoice(userName + '签到失败')
-        log('校友邦实习任务签到失败!')
+        if getSignStatus(sessionId, trainId, sence):
+            log('已签到,执行重新签到')
+            newSign(sessionId, signFormData)
+        else:
+            autoSign(sessionId, signFormData)
+        if getSignStatus(sessionId, trainId, sence):
+            dingTalkNoice(userName + '签到成功')
+            log('校友邦实习任务签到成功\n\n')
+        else:
+            dingTalkNoice(userName + '签到失败')
+            log('校友邦实习任务签到失败!')
 
 
 # 读取user.json
@@ -299,14 +336,15 @@ def readJsonInfo():
 
 # 腾讯云函数使用
 def main_handler(event, context):
+    sence = 1 if event['Message'] == 'signout' else 0
     users = readJsonInfo()
     for user in users['user']:
-        signHandler(user)
+        signHandler(user, sence)
         time.sleep(1.5)
 
 
 if __name__ == '__main__':
     users = readJsonInfo()
     for user in users['user']:
-        signHandler(user)
+        signHandler(user, sence=1)
         time.sleep(1.5)
