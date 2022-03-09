@@ -307,9 +307,11 @@ def signHandler(userInfo, sence):
     if sence == '1':
         autoSign(sessionId, signFormData)
         if getSignStatus(sessionId, trainId, sence):
+            sendNoice(userName + '签退成功')
             dingTalkNoice(userName + '签退成功')
             log('校友邦实习任务签退成功\n\n')
         else:
+            sendNoice(userName + '签退失败')
             dingTalkNoice(userName + '签退失败')
             log('校友邦实习任务签退失败!')
     else:
@@ -319,9 +321,11 @@ def signHandler(userInfo, sence):
         else:
             autoSign(sessionId, signFormData)
         if getSignStatus(sessionId, trainId, sence):
+            sendNoice(userName + '签到成功')
             dingTalkNoice(userName + '签到成功')
             log('校友邦实习任务签到成功\n\n')
         else:
+            sendNoice(userName + '签到失败')
             dingTalkNoice(userName + '签到失败')
             log('校友邦实习任务签到失败!')
 
