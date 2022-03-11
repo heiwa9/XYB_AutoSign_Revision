@@ -1,5 +1,5 @@
 {
-  "send_key": "Server酱 不使用留空",
+  "server_send_key": "Server酱 不使用留空",
   "ding_talk_access_token": "钉钉机器人 不使用留空",
   "ding_talk_secret": "钉钉加签验证 不使用留空",
   "user": [
