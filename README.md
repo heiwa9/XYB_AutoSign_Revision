@@ -28,7 +28,7 @@ user.json
 
 ```json
 {
-  "send_key": "Server酱 不使用留空",
+  "server_send_key": "Server酱 不使用留空",
   "ding_talk_access_token": "钉钉机器人 不使用留空",
   "ding_talk_secret": "钉钉加签验证 不使用留空",
   "user": [
@@ -91,7 +91,7 @@ user.json
 
 ![](https://cdn.jsdelivr.net/gh/1134451886/blog/img/QQ截图20220310114425.jpg)
 
-4. 配置`触发器`，选择自定义创建，配置`corn`
+4. 配置`触发器`，选择自定义创建，配置`corn`,corn表达式自行搜索格式规范
 
    ![](https://cdn.jsdelivr.net/gh/1134451886/blog/img/202203101209590.jpg)
 
